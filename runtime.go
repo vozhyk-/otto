@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/robertkrimen/otto/ast"
-	"github.com/robertkrimen/otto/parser"
+	"github.com/dop251/otto/ast"
+	"github.com/dop251/otto/parser"
 )
 
 type _global struct {
