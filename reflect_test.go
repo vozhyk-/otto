@@ -712,3 +712,44 @@ func Test_reflectCustomType(t *testing.T) {
 	})
 }
 
+func Test_reflectEquality(t *testing.T) {
+	tt(t, func() {
+		test, vm := test()
+		{
+			type A struct {
+				field int
+			}
+
+			type B struct {
+				field int
+			}
+
+			var a, b, c A
+			var d B
+
+			c.field = 42
+
+			vm.Set("a", a)
+			vm.Set("b", &b)
+			vm.Set("c", c)
+			vm.Set("d", d)
+
+			test(`
+				a == b;
+			`, true)
+
+			test(`
+				a === b;
+			`, true)
+
+			test(`
+				a == c;
+			`, false)
+
+			test(`
+				a == d;
+			`, false)
+
+		}
+	})
+}

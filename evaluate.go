@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/dop251/otto/token"
+	"reflect"
 )
 
 func (self *_runtime) evaluateMultiply(left float64, right float64) Value {
@@ -302,6 +303,20 @@ func (self *_runtime) calculateComparison(comparator token.Token, left Value, ri
 			result = x.bool() == y.bool()
 		case valueObject:
 			result = x._object() == y._object()
+			if !result {
+				a := x._object().value
+				b := y._object().value
+				switch a := a.(type) {
+				case *_goStructObject:
+					if b, ok := b.(*_goStructObject); ok {
+						result = reflect.Indirect(a.value).Interface() == reflect.Indirect(b.value).Interface()
+					}
+				case *_goArrayObject:
+					if b, ok := b.(*_goArrayObject); ok {
+						result = reflect.Indirect(a.value).Interface() == reflect.Indirect(b.value).Interface()
+					}
+				}
+			}
 		default:
 			goto ERROR
 		}
