@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/dop251/otto/token"
-	"reflect"
 )
 
 func (self *_runtime) evaluateMultiply(left float64, right float64) Value {
@@ -236,7 +235,6 @@ func (self *_runtime) calculateComparison(comparator token.Token, left Value, ri
 	x := left.resolve()
 	y := right.resolve()
 
-	kindEqualKind := false
 	result := true
 	negate := false
 
@@ -253,17 +251,13 @@ func (self *_runtime) calculateComparison(comparator token.Token, left Value, ri
 		negate = true
 		fallthrough
 	case token.STRICT_EQUAL:
-		if x.kind != y.kind {
-			result = false
-		} else {
-			kindEqualKind = true
-		}
+		result = strictEqualityComparison(x, y)
 	case token.NOT_EQUAL:
 		negate = true
 		fallthrough
 	case token.EQUAL:
 		if x.kind == y.kind {
-			kindEqualKind = true
+			result = strictEqualityComparison(x, y)
 		} else if x.kind <= valueNull && y.kind <= valueNull {
 			result = true
 		} else if x.kind <= valueNull || y.kind <= valueNull {
@@ -285,49 +279,9 @@ func (self *_runtime) calculateComparison(comparator token.Token, left Value, ri
 		panic(fmt.Errorf("Unknown comparator %s", comparator.String()))
 	}
 
-	if kindEqualKind {
-		switch x.kind {
-		case valueUndefined, valueNull:
-			result = true
-		case valueNumber:
-			x := x.float64()
-			y := y.float64()
-			if math.IsNaN(x) || math.IsNaN(y) {
-				result = false
-			} else {
-				result = x == y
-			}
-		case valueString:
-			result = x.string() == y.string()
-		case valueBoolean:
-			result = x.bool() == y.bool()
-		case valueObject:
-			result = x._object() == y._object()
-			if !result {
-				a := x._object().value
-				b := y._object().value
-				switch a := a.(type) {
-				case *_goStructObject:
-					if b, ok := b.(*_goStructObject); ok {
-						result = reflect.Indirect(a.value).Interface() == reflect.Indirect(b.value).Interface()
-					}
-				case *_goArrayObject:
-					if b, ok := b.(*_goArrayObject); ok {
-						result = reflect.Indirect(a.value).Interface() == reflect.Indirect(b.value).Interface()
-					}
-				}
-			}
-		default:
-			goto ERROR
-		}
-	}
-
 	if negate {
 		result = !result
 	}
 
 	return result
-
-ERROR:
-	panic(hereBeDragons("%v (%v) %s %v (%v)", x, x.kind, comparator, y, y.kind))
 }

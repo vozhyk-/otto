@@ -750,6 +750,24 @@ func Test_reflectEquality(t *testing.T) {
 				a == d;
 			`, false)
 
+			test(`
+				a != d;
+			`, true)
+
+			test(`
+				a !== d;
+			`, true)
+
+			test(`
+			var arr = [a, b];
+			arr.indexOf(b);
+			`, 0)
+
+			test(`
+			var arr = [a, b];
+			arr.lastIndexOf(a);
+			`, 1)
+
 		}
 	})
 }

@@ -620,6 +620,20 @@ func strictEqualityComparison(x Value, y Value) bool {
 		result = x.bool() == y.bool()
 	case valueObject:
 		result = x._object() == y._object()
+		if !result {
+			a := x._object().value
+			b := y._object().value
+			switch a := a.(type) {
+			case *_goStructObject:
+				if b, ok := b.(*_goStructObject); ok {
+					result = reflect.Indirect(a.value).Interface() == reflect.Indirect(b.value).Interface()
+				}
+			case *_goArrayObject:
+				if b, ok := b.(*_goArrayObject); ok {
+					result = reflect.Indirect(a.value).Interface() == reflect.Indirect(b.value).Interface()
+				}
+			}
+		}
 	default:
 		panic(hereBeDragons())
 	}
