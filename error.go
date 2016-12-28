@@ -1,7 +1,6 @@
 package otto
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -217,29 +216,6 @@ func (rt *_runtime) panicRangeError(argumentList ...interface{}) *_exception {
 }
 
 func catchPanic(function func()) (err error) {
-	defer func() {
-		if caught := recover(); caught != nil {
-			if exception, ok := caught.(*_exception); ok {
-				caught = exception.eject()
-			}
-			switch caught := caught.(type) {
-			case _error:
-				err = &Error{caught}
-				return
-			case Value:
-				if vl := caught._object(); vl != nil {
-					switch vl := vl.value.(type) {
-					case _error:
-						err = &Error{vl}
-						return
-					}
-				}
-				err = errors.New(caught.string())
-				return
-			}
-			panic(caught)
-		}
-	}()
 	function()
 	return nil
 }
