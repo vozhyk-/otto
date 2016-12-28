@@ -38,6 +38,7 @@ var (
 	_classGoMap,
 	_classGoArray,
 	_classGoSlice,
+	_classGoResizeableSlice,
 	_ *_objectClass
 )
 
@@ -158,6 +159,21 @@ func init() {
 		goSliceDefineOwnProperty,
 		goSliceDelete,
 		goSliceEnumerate,
+		objectClone,
+		nil,
+	}
+
+	_classGoResizeableSlice = &_objectClass{
+		goResizeableSliceGetOwnProperty,
+		objectGetProperty,
+		objectGet,
+		objectCanPut,
+		objectPut,
+		objectHasProperty,
+		objectHasOwnProperty,
+		goResizeableSliceDefineOwnProperty,
+		goResizeableSliceDelete,
+		goResizeableSliceEnumerate,
 		objectClone,
 		nil,
 	}

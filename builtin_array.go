@@ -121,7 +121,7 @@ func builtinArray_push(call FunctionCall) Value {
 		index += 1
 	}
 	length := toValue_int64(index)
-	thisObject.put("length", length, true)
+	thisObject.put("length", length, false)
 	return length
 }
 

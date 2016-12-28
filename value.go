@@ -689,6 +689,8 @@ func (self Value) export() interface{} {
 			return value.value.Interface()
 		case *_goSliceObject:
 			return value.value.Interface()
+		case *_goResizeableSliceObject:
+			return value.value.Interface()
 		}
 		if object.class == "Array" {
 			result := make([]interface{}, 0)

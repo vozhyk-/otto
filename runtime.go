@@ -281,6 +281,8 @@ func (self *_runtime) toValue(value interface{}) Value {
 					return toValue_object(self.newGoStructObject(value))
 				case reflect.Array:
 					return toValue_object(self.newGoArray(value))
+				case reflect.Slice:
+					return toValue_object(self.newGoResizeableSlice(value))
 				}
 			case reflect.Func:
 				// TODO Maybe cache this?
@@ -324,6 +326,12 @@ func (self *_runtime) toValue(value interface{}) Value {
 
 func (runtime *_runtime) newGoSlice(value reflect.Value) *_object {
 	self := runtime.newGoSliceObject(value)
+	self.prototype = runtime.global.ArrayPrototype
+	return self
+}
+
+func (runtime *_runtime) newGoResizeableSlice(value reflect.Value) *_object {
+	self := runtime.newGoResizeableSliceObject(value)
 	self.prototype = runtime.global.ArrayPrototype
 	return self
 }
